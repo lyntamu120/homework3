@@ -11,20 +11,43 @@ class MoviesController < ApplicationController
   end
 
   def index
+    # puts params.inspect
+    # puts params[:commit]
+    # puts params[:ratings].nil?
+    # puts session[:sort]
+    # puts session[:select_ratings]
+
     @all_ratings = ['G','PG','PG-13','R','NC-17']
-    @sort = params[:sort]
-    if params[:commit] == 'Refresh' && !params[:ratings].nil?
-      @movies = Movie.where(:rating => params[:ratings].keys)
-      @select_ratings = params[:ratings].keys
+    #store ratings
+    if params[:commit] == 'Refresh' && params[:ratings].nil?
+      select_ratings = {}
+      session[:select_ratings] = select_ratings
+    elsif params[:ratings].nil? && session[:select_ratings].nil?
+      select_ratings = Movie.all_ratings
+    elsif !params[:ratings].nil?
+      session[:select_ratings] = params[:ratings]
+      select_ratings = params[:ratings]
     else
-      @movies = Movie.all
-      @select_ratings = @all_ratings
+      select_ratings = session[:select_ratings]
+    end
+    puts select_ratings
+    #store sorts
+    if !params[:sort].nil?
+      session[:sort] = params[:sort]
+      select_sort = params[:sort]
+    else
+      select_sort = session[:sort]
     end
 
-    if @sort == 'title'
-      @movies = Movie.order(:title => :asc)
-    elsif @sort == 'release_date'
-      @movies = Movie.order(:release_date => :asc)
+    @select_ratings = select_ratings
+    @sort = select_sort
+
+    if select_sort == 'title'
+      @movies = Movie.where(:rating => select_ratings.keys).order(:title => :asc)
+    elsif select_sort == 'release_date'
+      @movies = Movie.where(:rating => select_ratings.keys).order(:release_date => :asc)
+    else
+      @movies = Movie.where(:rating => select_ratings.keys)
     end
   end
 
