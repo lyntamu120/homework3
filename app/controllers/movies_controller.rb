@@ -19,10 +19,10 @@ class MoviesController < ApplicationController
 
     @all_ratings = ['G','PG','PG-13','R','NC-17']
     #store ratings
-    if params[:commit] == 'Refresh' && params[:ratings].nil?
-      select_ratings = {}
-      session[:select_ratings] = select_ratings
-    elsif params[:ratings].nil? && session[:select_ratings].nil?
+    # if params[:commit] == 'Refresh' && params[:ratings].nil?
+    #   select_ratings = {}
+    #   session[:select_ratings] = select_ratings
+    if params[:ratings].nil? && session[:select_ratings].nil?
       select_ratings = Movie.all_ratings
     elsif !params[:ratings].nil?
       session[:select_ratings] = params[:ratings]
